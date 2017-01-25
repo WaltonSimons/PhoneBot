@@ -14,3 +14,22 @@ class smsd(object):
 
     def stop(self):
         self.sms.Shutdown()
+
+    def inject_sms(self, phonenumber, message):
+        smsinfo = {
+                'Class': -1,
+                'Unicode': True,
+                'Entries':  [
+                    {
+                        'ID': 'ConcatenatedTextLong',
+                        'Buffer': message
+                    }
+                ]}
+
+        encoded = gammu.encode(smsinfo)
+
+        for message in encoded:
+            message['SMSC'] = {'Location': 1}
+            message['Number'] = phonenumber
+
+        self.sms.InjectSMS(encoded)
